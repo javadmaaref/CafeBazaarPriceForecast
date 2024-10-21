@@ -7,7 +7,7 @@ from models.improved_xgboost_model import ImprovedXGBoostModel
 from models.setup_database import setup_database, get_session
 from models.database_models import App
 import pandas as pd
-
+from sklearn.utils import resample
 
 def main():
     # Set up database
@@ -69,6 +69,10 @@ def main():
     X = prepare_features(df_paid)
     y = df_paid['Price_Log']
 
+    # Bootstrap resampling
+    n_samples = 200000
+    X_resampled, y_resampled = resample(X, y, n_samples=n_samples, random_state=42)
+
     # Final database state
     print("\nFinal database state:")
     print(X.head(20))
@@ -81,7 +85,7 @@ def main():
 
     # Train for price
     xgb_model = ImprovedXGBoostModel()
-    trained_model = xgb_model.train(X, y)
+    trained_model = xgb_model.train(X_resampled, y_resampled)
 
     # Feature importance
     feature_importance = trained_model.best_estimator_.feature_importances_

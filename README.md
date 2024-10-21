@@ -9,6 +9,7 @@ This project analyzes data from CafeBazaar, focusing on paid apps and their pric
 - XGBoost model for app price prediction
 - Feature importance analysis to understand key pricing factors
 - Handling of Persian text and numeric data
+- Bootstrap resampling for better model training
 
 ## Setup
 
@@ -45,6 +46,20 @@ This project analyzes data from CafeBazaar, focusing on paid apps and their pric
    ```bash
    python main.py
    ```
+## Configuration Example
+
+Your `config.py` file should be structured like this:
+
+```python
+import os
+
+# Database configuration
+DATABASE_URI = 'postgresql://username:password@localhost/database_name'
+
+# Data configuration
+DATA_DIR = os.path.join(os.path.dirname(__file__), r'path\to\data\directory')
+CSV_FILES = ['file1.csv', 'file2.csv', 'file3.csv']  # Replace with your actual filenames
+```
 
 ## Project Structure
 
@@ -75,7 +90,12 @@ The project uses an XGBoost regressor for price prediction:
 - Hyperparameter tuning using RandomizedSearchCV
 - Feature scaling with StandardScaler
 - Log transformation of the target variable (price)
+- Bootstrap resampling to enhance training data size
 - Evaluation metrics including MSE, RMSE, and R² score
+
+## Bootstrap Resampling
+
+To improve model performance and reduce overfitting, bootstrap resampling is applied. This technique allows the model to be trained on a larger dataset by generating synthetic samples from the original dataset, which helps to provide more robust training. In this project, 200,000 samples were generated for training, leading to improved evaluation metrics.
 
 ## Results and Insights
 
@@ -91,16 +111,21 @@ After running the analysis on the CafeBazaar dataset, we gained several insights
    - Average Number of Installs: 188.39
 
 3. **Price Prediction Model:**
-   - The XGBoost model achieved an R² score of 0.1656 on the test set, indicating that about 16.56% of the variance in app prices can be explained by the model.
-   - Root Mean Squared Error (RMSE) on the test set: 0.1005, which suggests that on average, our predictions deviate by about 0.1005 log units from the actual log-transformed prices.
+   - The XGBoost model achieved an R² score of 0.6372 on the test set, indicating that about 63.72% of the variance in app prices can be explained by the model.
+   - Root Mean Squared Error (RMSE) on the test set: 0.0663, which suggests that on average, our predictions deviate by about 0.0663 log units from the actual log-transformed prices.
 
 4. **Feature Importance:**
-   The top 5 most important features for predicting app prices were:
-   1. Personalization Category (شخصی‌سازی): 12.91%
-   2. Entertainment Category (سرگرمی): 6.51%
-   3. Action Category (اکشن): 5.68%
-   4. Religious Category (مذهبی): 5.52%
-   5. Books & Reference Category (کتاب‌ها و مطبوعات): 5.26%
+   The top 10 most important features for predicting app prices were:
+   1. Personalization Category (شخصی‌سازی): 7.55%
+   2. Transportation Category (رفت و آمد): 5.58%
+   3. Cooking and Restaurant Category (آشپزی و رستوران): 5.51%
+   4. Travel Category (سفر): 4.23%
+   5. Strategy Category (استراتژی): 3.70%
+   6. Sports Category (ورزشی): 3.57%
+   7. Medical Category (پزشکی): 3.49%
+   8. Words and Knowledge Category (کلمات و دانستنی‌ها): 3.48%
+   9. Action Category (اکشن): 3.33%
+   10. Weather Category (آب و هوا): 3.24%
 
 5. **Data Cleaning Improvements:**
    - The data cleaning process now includes normalization of app names and developer names to better handle duplicates.
